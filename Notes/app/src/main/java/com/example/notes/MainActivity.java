@@ -14,6 +14,9 @@ import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,29 +25,27 @@ import android.widget.Toast;
 import com.example.notes.Model.NotesModel;
 import com.example.notes.MyAdapter.NotesAdapter;
 import com.example.notes.databinding.ActivityMainBinding;
-
+import com.example.notes.databinding.DeleteUpdateNoteBinding;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
-
-import java.net.ServerSocket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity  {
    ActivityMainBinding binding;
    Button save_btn;
    EditText title_Edit_Text,note_Edit_Text;
      public DatabaseReference myRef;
+
     String title_To_Firebase, note_To_Firebase;
+    FirebaseAuth auth=FirebaseAuth.getInstance();
     List <NotesModel> noteList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(binding.getRoot());
         FirebaseDatabase database = FirebaseDatabase.getInstance();
          myRef = database.getReference("Notes");
+
 
        binding.btnAddNotes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onStart() {
         super.onStart();
-        myRef.addValueEventListener(new ValueEventListener() {
+        myRef.child(auth.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 noteList = new ArrayList<>();
@@ -200,10 +202,10 @@ public class MainActivity extends AppCompatActivity  {
            public void onClick(View view) {
                title_To_Firebase=title_Edit_Text.getText().toString();
                note_To_Firebase = note_Edit_Text.getText().toString();
-                   String id =    myRef.push().getKey();
+               String id = myRef.push().getKey();
 
                    NotesModel notesModel = new NotesModel(id,title_To_Firebase,note_To_Firebase,getTime());
-                   myRef.child(id).setValue(notesModel);
+                   myRef.child(auth.getUid()).child(id).setValue(notesModel);
                    alertDialog.dismiss();
            }
        });
@@ -216,8 +218,25 @@ public class MainActivity extends AppCompatActivity  {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE hh:mm a");
          String strdate = dateFormat.format(calendar.getTime());
          return strdate;
-
-
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_actionbar,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.user_logout:
+                auth.signOut();
+                Intent logout_intent = new Intent(getApplicationContext(),SigningActivity.class);
+                startActivity(logout_intent);
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }
