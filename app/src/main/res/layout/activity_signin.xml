@@ -105,17 +105,17 @@
                android:gravity="center"
                android:text="Don't have an account ? Sign Up " />
 
-           <ProgressBar
-               android:id="@+id/progressBar_signup"
-               style="?android:attr/progressBarStyle"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:layout_marginTop="5dp"
-               android:visibility="gone" />
-
 
        </LinearLayout>
    </androidx.cardview.widget.CardView>
+
+    <ProgressBar
+        android:id="@+id/progressBar_signup"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:visibility="gone" />
 
 
 </LinearLayout>

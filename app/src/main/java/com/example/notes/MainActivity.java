@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity  {
                                     String new_title = title_edit_text.getText().toString();
                                     String new_note = note_Edit_text.getText().toString();
                                    NotesModel note_after_update = new NotesModel(notesModel.getId(),new_title,new_note,getTime());
-                                    myRef.child(notesModel.getId()).setValue(note_after_update);
+                                myRef.child(auth.getUid()).child(notesModel.getId()).setValue(note_after_update);
                                 alert.dismiss();
 
 
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity  {
                         v.findViewById(R.id.btn_delete).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                myRef.child(notesModel.getId()).removeValue();
+                                myRef.child(auth.getUid()).child(notesModel.getId()).removeValue();
                                 alert.dismiss();
                             }
                         });
